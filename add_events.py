@@ -112,10 +112,6 @@ def main():
                 replaceHour += int(startHour)
             event = {}
             # Currently there are no labs in `subjects.json`
-            if (data[day][time][0] in subjects.keys()):
-                event['summary'] = "Class of " + subjects[data[day][time][0]].title()
-            else:
-                event['summary'] = "Lab of " + data[day][time][0]
             event['location'] = data[day][time][1]
             event['start'] = {}
             start_time = startDate.replace(hour = replaceHour, minute = int(startMinute))
@@ -125,6 +121,15 @@ def main():
             event['end']['dateTime'] = (start_time + datetime.timedelta(hours = int(data[day][time][2]))).__str__().replace(" ", "T")
             event['end']['timeZone'] = "Asia/Kolkata"
             event['recurrence'] = ['RRULE:FREQ=WEEKLY;UNTIL=20161120T000000Z']
+            # if (data[day][time][0] in subjects.keys()):
+            #     event['summary'] = "Class of " + subjects[data[day][time][0]].title()
+            # else:
+            #     event['summary'] = "Lab of " + subjects[data[day][time][0]].title()
+            if ( (int(event['end']['dateTime'][11:13]) - int(event['start']['dateTime'][11:13]) )  < 3 ) :
+                event['summary'] = "Class of " + subjects[data[day][time][0]].title()
+            else:
+                event['summary'] = "Lab of " + subjects[data[day][time][0]].title()
+
             recurring_event = service.events().insert(calendarId='primary', body=event).execute()
             if (DEBUG):
                 print (event)
